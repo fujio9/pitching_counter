@@ -4,6 +4,7 @@ Python + Streamlit / スマホ向け片手操作
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 # --- Page config ---
 st.set_page_config(
@@ -22,16 +23,30 @@ if "history" not in st.session_state:
 if "prev_pitcher_input" not in st.session_state:
     st.session_state.prev_pitcher_input = None
 
-# --- カスタム CSS（stButton ベース・:has/data-testid 不使用）---
+# --- カスタム CSS（aria-label で投球・＋・−のみ指定・交代・リセットには影響しない）---
 st.markdown(
     """
 <style>
-  /* 投球・＋・−: 大きく・太字・押しやすい高さ・角丸・中央寄せ可能に */
-  div.stButton > button {
-    font-size: 2.2rem;
-    font-weight: 700;
-    min-height: 120px;
-    border-radius: 16px;
+  /* 投球ボタン: 約3倍の文字サイズ・太字・押しやすい高さ */
+  button[aria-label="投球"] {
+    font-size: 4rem !important;
+    font-weight: 900 !important;
+    min-height: 140px !important;
+    border-radius: 16px !important;
+  }
+  /* ＋ボタン */
+  button[aria-label="＋"] {
+    font-size: 4rem !important;
+    font-weight: 900 !important;
+    min-height: 100px !important;
+    border-radius: 16px !important;
+  }
+  /* −ボタン */
+  button[aria-label="−"] {
+    font-size: 4rem !important;
+    font-weight: 900 !important;
+    min-height: 100px !important;
+    border-radius: 16px !important;
   }
 </style>
 """,
@@ -88,6 +103,26 @@ with col_p:
     if st.button("＋", key="btn_plus", use_container_width=True):
         st.session_state.current_count += 1
         st.rerun()
+
+# 投球・＋・− に aria-label を付与（CSS の button[aria-label="..."] で個別指定するため）
+_script = """
+<script>
+(function() {
+  function setLabels() {
+    var doc = window.parent.document;
+    doc.querySelectorAll('button').forEach(function(b) {
+      var t = (b.innerText || b.textContent || '').trim();
+      if (t === '投球') b.setAttribute('aria-label', '投球');
+      else if (t === '＋') b.setAttribute('aria-label', '＋');
+      else if (t === '−') b.setAttribute('aria-label', '−');
+    });
+  }
+  setLabels();
+  window.parent.setTimeout(setLabels, 300);
+})();
+</script>
+"""
+components.html(_script, height=0)
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 
