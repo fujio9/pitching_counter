@@ -4,7 +4,6 @@ Python + Streamlit / スマホ向け片手操作
 """
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 # --- Page config ---
 st.set_page_config(
@@ -23,30 +22,23 @@ if "history" not in st.session_state:
 if "prev_pitcher_input" not in st.session_state:
     st.session_state.prev_pitcher_input = None
 
-# --- カスタム CSS（aria-label で投球・＋・−のみ指定・交代・リセットには影響しない）---
+# --- カスタム CSS（div.stButton で安定指定・交代・リセットはマーカーでリセット）---
 st.markdown(
     """
 <style>
-  /* 投球ボタン: 約3倍の文字サイズ・太字・押しやすい高さ */
-  button[aria-label="投球"] {
+  /* 投球・＋・−: 全ボタンに 4rem・太字・押しやすい高さ（rerun 後も安定） */
+  div.stButton > button {
     font-size: 4rem !important;
     font-weight: 900 !important;
-    min-height: 140px !important;
+    min-height: 120px !important;
     border-radius: 16px !important;
   }
-  /* ＋ボタン */
-  button[aria-label="＋"] {
-    font-size: 4rem !important;
-    font-weight: 900 !important;
-    min-height: 100px !important;
-    border-radius: 16px !important;
-  }
-  /* −ボタン */
-  button[aria-label="−"] {
-    font-size: 4rem !important;
-    font-weight: 900 !important;
-    min-height: 100px !important;
-    border-radius: 16px !important;
+  /* 交代・リセットのみ通常サイズに戻す */
+  :has(.secondary-buttons) + * div.stButton > button,
+  :has(.secondary-buttons) + * + * div.stButton > button {
+    font-size: 1rem !important;
+    font-weight: normal !important;
+    min-height: auto !important;
   }
 </style>
 """,
@@ -104,29 +96,10 @@ with col_p:
         st.session_state.current_count += 1
         st.rerun()
 
-# 投球・＋・− に aria-label を付与（CSS の button[aria-label="..."] で個別指定するため）
-_script = """
-<script>
-(function() {
-  function setLabels() {
-    var doc = window.parent.document;
-    doc.querySelectorAll('button').forEach(function(b) {
-      var t = (b.innerText || b.textContent || '').trim();
-      if (t === '投球') b.setAttribute('aria-label', '投球');
-      else if (t === '＋') b.setAttribute('aria-label', '＋');
-      else if (t === '−') b.setAttribute('aria-label', '−');
-    });
-  }
-  setLabels();
-  window.parent.setTimeout(setLabels, 300);
-})();
-</script>
-"""
-components.html(_script, height=0)
-
 st.markdown("<br><br>", unsafe_allow_html=True)
 
-# --- 交代する ---
+# --- 交代する（secondary-buttons マーカー以降は CSS で通常サイズに）---
+st.markdown('<div class="secondary-buttons"></div>', unsafe_allow_html=True)
 if st.button("交代する", key="change_pitcher", use_container_width=True):
     st.session_state.history.append(
         {"number": st.session_state.current_pitcher or "—", "count": st.session_state.current_count}
