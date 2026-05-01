@@ -46,6 +46,23 @@ st.markdown(
     font-size: 0.82rem;
     opacity: 0.95;
   }
+  /* 投手入力欄を白系に固定 */
+  div[data-baseweb="input"] > div {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 10px !important;
+  }
+  div[data-baseweb="input"] input {
+    color: #111827 !important;
+    background: transparent !important;
+  }
+  div[data-baseweb="input"] input::placeholder {
+    color: #6b7280 !important;
+  }
+  div[data-baseweb="input"]:focus-within > div {
+    border-color: #06c755 !important;
+    box-shadow: 0 0 0 1px rgba(6, 199, 85, 0.22) !important;
+  }
   .count-card {
     background: #ffffff;
     border-radius: 14px;
@@ -120,9 +137,9 @@ st.markdown(
     background: #06c755 !important;
     color: #ffffff !important;
     border: none !important;
-    min-height: 80px !important;
-    border-radius: 14px !important;
-    font-size: 2.2rem !important;
+    min-height: 72px !important;
+    border-radius: 12px !important;
+    font-size: 2rem !important;
     font-weight: 900 !important;
     box-shadow: 0 6px 12px rgba(6, 199, 85, 0.24) !important;
     transition: transform 0.08s ease, box-shadow 0.08s ease !important;
@@ -157,7 +174,7 @@ current_pitcher_view = st.session_state.current_pitcher or "未入力"
 st.markdown(
     f"""
 <div class="line-header">
-  <div class="line-header-title">Pitch Counter</div>
+  <div class="line-header-title">投球数カウンター</div>
   <div class="line-header-sub">現在の投手: {current_pitcher_view}</div>
 </div>
 """,
