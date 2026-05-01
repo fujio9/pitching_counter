@@ -32,26 +32,26 @@ st.markdown(
   .line-header {
     background: #06c755;
     color: #ffffff;
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   .line-header-title {
-    font-size: 1.15rem;
+    font-size: 1rem;
     font-weight: 700;
   }
   .line-header-sub {
-    margin-top: 4px;
-    font-size: 0.92rem;
+    margin-top: 2px;
+    font-size: 0.82rem;
     opacity: 0.95;
   }
   .count-card {
     background: #ffffff;
-    border-radius: 18px;
-    padding: 18px 16px 14px;
-    margin: 8px 0 12px;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    padding: 10px 12px 8px;
+    margin: 6px 0 8px;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.07);
     text-align: center;
   }
   .count-label {
@@ -60,24 +60,24 @@ st.markdown(
     margin-bottom: 4px;
   }
   .count-value {
-    font-size: 4rem;
+    font-size: 3.1rem;
     font-weight: 800;
     color: #111827;
     line-height: 1.1;
   }
   .count-unit {
-    font-size: 1.35rem;
+    font-size: 1.05rem;
     color: #111827;
-    margin-left: 6px;
+    margin-left: 4px;
   }
   .section-label {
     color: #6b7280;
-    font-size: 0.92rem;
+    font-size: 0.84rem;
     font-weight: 600;
-    margin: 4px 2px 8px;
+    margin: 1px 2px 4px;
   }
   .history-area {
-    margin-top: 8px;
+    margin-top: 4px;
   }
   .history-row {
     display: flex;
@@ -116,40 +116,29 @@ st.markdown(
   }
 
   /* 主操作ボタン（投球、＋、−） */
-  :has(.main-action-marker) + * div.stButton > button {
+  :has(.main-actions-row) + * div.stButton > button {
     background: #06c755 !important;
     color: #ffffff !important;
     border: none !important;
-    min-height: 110px !important;
-    border-radius: 18px !important;
-    font-size: 3.2rem !important;
+    min-height: 80px !important;
+    border-radius: 14px !important;
+    font-size: 2.2rem !important;
     font-weight: 900 !important;
-    box-shadow: 0 8px 18px rgba(6, 199, 85, 0.28) !important;
+    box-shadow: 0 6px 12px rgba(6, 199, 85, 0.24) !important;
     transition: transform 0.08s ease, box-shadow 0.08s ease !important;
   }
-  :has(.main-action-marker) + * div.stButton > button:active {
+  :has(.main-actions-row) + * div.stButton > button:active {
     transform: scale(0.97);
-    box-shadow: 0 4px 10px rgba(6, 199, 85, 0.22) !important;
-  }
-  :has(.plus-minus-marker) + * div.stButton > button,
-  :has(.plus-minus-marker) + * + * div.stButton > button {
-    background: #06c755 !important;
-    color: #ffffff !important;
-    border: none !important;
-    min-height: 92px !important;
-    border-radius: 16px !important;
-    font-size: 3rem !important;
-    font-weight: 900 !important;
-    box-shadow: 0 8px 16px rgba(6, 199, 85, 0.24) !important;
+    box-shadow: 0 3px 8px rgba(6, 199, 85, 0.2) !important;
   }
 
   /* 副操作ボタン（交代、リセット） */
   :has(.secondary-buttons) + * div.stButton > button,
   :has(.secondary-buttons) + * + * div.stButton > button {
-    min-height: 54px !important;
-    font-size: 1rem !important;
+    min-height: 46px !important;
+    font-size: 0.92rem !important;
     font-weight: 600 !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     border: 1px solid #d1d5db !important;
     background: #ffffff !important;
     color: #1f2937 !important;
@@ -212,28 +201,20 @@ st.markdown(
 
 # --- 操作エリア ---
 st.markdown('<div class="section-label">メイン操作</div>', unsafe_allow_html=True)
-st.markdown('<div class="main-action-marker"></div>', unsafe_allow_html=True)
-col_left, col_center, col_right = st.columns([1, 2, 1])
-with col_center:
-    if st.button("投球", key="pitch_button", use_container_width=True):
-        st.session_state.current_count += 1
-        st.rerun()
-
-# --- ＋ / −（横並び）---
-st.markdown('<div class="plus-minus-marker"></div>', unsafe_allow_html=True)
-col_m, col_gap, col_p = st.columns([1, 0.35, 1])
+st.markdown('<div class="main-actions-row"></div>', unsafe_allow_html=True)
+col_m, col_center, col_p = st.columns([1, 1.4, 1])
 with col_m:
     if st.button("−", key="btn_minus", use_container_width=True):
         st.session_state.current_count = max(0, st.session_state.current_count - 1)
         st.rerun()
-with col_gap:
-    st.write("")
+with col_center:
+    if st.button("投球", key="pitch_button", use_container_width=True):
+        st.session_state.current_count += 1
+        st.rerun()
 with col_p:
     if st.button("＋", key="btn_plus", use_container_width=True):
         st.session_state.current_count += 1
         st.rerun()
-
-st.markdown("<br>", unsafe_allow_html=True)
 
 # --- 副操作 ---
 st.markdown('<div class="section-label">投手管理</div>', unsafe_allow_html=True)
