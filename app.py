@@ -22,69 +22,206 @@ if "history" not in st.session_state:
 if "prev_pitcher_input" not in st.session_state:
     st.session_state.prev_pitcher_input = None
 
-# --- カスタム CSS（div.stButton で安定指定・交代・リセットはマーカーでリセット）---
+# --- カスタム CSS（LINEライト風）---
 st.markdown(
     """
 <style>
-  /* 投球・＋・−: 全ボタンに 4rem・太字・押しやすい高さ（rerun 後も安定） */
-  div.stButton > button {
-    font-size: 4rem !important;
-    font-weight: 900 !important;
-    min-height: 120px !important;
-    border-radius: 16px !important;
+  .stApp {
+    background: #f5f6f8;
   }
-  /* 交代・リセットのみ通常サイズに戻す */
+  .line-header {
+    background: #06c755;
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  }
+  .line-header-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .line-header-sub {
+    margin-top: 4px;
+    font-size: 0.92rem;
+    opacity: 0.95;
+  }
+  .count-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 18px 16px 14px;
+    margin: 8px 0 12px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    text-align: center;
+  }
+  .count-label {
+    color: #6f7785;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+  .count-value {
+    font-size: 4rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.1;
+  }
+  .count-unit {
+    font-size: 1.35rem;
+    color: #111827;
+    margin-left: 6px;
+  }
+  .section-label {
+    color: #6b7280;
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin: 4px 2px 8px;
+  }
+  .history-area {
+    margin-top: 8px;
+  }
+  .history-row {
+    display: flex;
+    justify-content: flex-start;
+    margin: 8px 0;
+  }
+  .history-bubble {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 10px 12px;
+    box-shadow: 0 4px 14px rgba(17, 24, 39, 0.08);
+    max-width: 92%;
+  }
+  .history-meta {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin-bottom: 3px;
+  }
+  .history-main {
+    font-size: 0.95rem;
+    color: #111827;
+    font-weight: 600;
+  }
+  .history-count {
+    font-size: 0.84rem;
+    color: #374151;
+    margin-top: 4px;
+  }
+  .empty-history {
+    color: #8a94a6;
+    font-size: 0.9rem;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 10px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  /* 主操作ボタン（投球、＋、−） */
+  :has(.main-action-marker) + * div.stButton > button {
+    background: #06c755 !important;
+    color: #ffffff !important;
+    border: none !important;
+    min-height: 110px !important;
+    border-radius: 18px !important;
+    font-size: 3.2rem !important;
+    font-weight: 900 !important;
+    box-shadow: 0 8px 18px rgba(6, 199, 85, 0.28) !important;
+    transition: transform 0.08s ease, box-shadow 0.08s ease !important;
+  }
+  :has(.main-action-marker) + * div.stButton > button:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 10px rgba(6, 199, 85, 0.22) !important;
+  }
+  :has(.plus-minus-marker) + * div.stButton > button,
+  :has(.plus-minus-marker) + * + * div.stButton > button {
+    background: #06c755 !important;
+    color: #ffffff !important;
+    border: none !important;
+    min-height: 92px !important;
+    border-radius: 16px !important;
+    font-size: 3rem !important;
+    font-weight: 900 !important;
+    box-shadow: 0 8px 16px rgba(6, 199, 85, 0.24) !important;
+  }
+
+  /* 副操作ボタン（交代、リセット） */
   :has(.secondary-buttons) + * div.stButton > button,
   :has(.secondary-buttons) + * + * div.stButton > button {
+    min-height: 54px !important;
     font-size: 1rem !important;
-    font-weight: normal !important;
-    min-height: auto !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    border: 1px solid #d1d5db !important;
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    box-shadow: none !important;
+  }
+  :has(.secondary-buttons) + * + * div.stButton > button {
+    background: #f9fafb !important;
   }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
-# --- 背番号入力 ---
+# --- ヘッダー ---
+current_pitcher_view = st.session_state.current_pitcher or "未入力"
+st.markdown(
+    f"""
+<div class="line-header">
+  <div class="line-header-title">Pitch Counter</div>
+  <div class="line-header-sub">現在の投手: {current_pitcher_view}</div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+# --- 投手入力（背番号・名前・任意テキスト） ---
 st.session_state.current_pitcher = st.text_input(
-    "現在の投手の背番号",
+    "現在の投手（背番号・名前・任意テキスト）",
     value=st.session_state.current_pitcher,
     key="pitcher_input",
-    placeholder="例: 18",
+    placeholder="例: 18 / 佐藤 / 先発A",
 ).strip()
 
-# --- 同じ背番号を入力した場合、履歴の投球数から再開 ---
+# --- 同じ投手入力を再入力した場合、履歴の投球数から再開 ---
 current = st.session_state.current_pitcher
 prev = st.session_state.prev_pitcher_input
 if current != prev:
     last_count = None
     for record in reversed(st.session_state.history):
-        if str(record["number"]) == str(current):
+        # 旧データ（numberキー）との互換を維持
+        saved_pitcher = record.get("pitcher", record.get("number", ""))
+        if str(saved_pitcher) == str(current):
             last_count = record["count"]
             break
     if last_count is not None:
         st.session_state.current_count = last_count
     st.session_state.prev_pitcher_input = current
 
-# --- カウント表示（中央・大きく）---
+# --- メインカード（カウント表示）---
 count = st.session_state.current_count
 st.markdown(
-    f'<div style="text-align: center;"><span style="font-size: 4rem; font-weight: 700;">{count}</span><span style="font-size: 1.5rem;"> 球</span></div>',
+    f"""
+<div class="count-card">
+  <div class="count-label">現在の投球数</div>
+  <div><span class="count-value">{count}</span><span class="count-unit">球</span></div>
+</div>
+""",
     unsafe_allow_html=True,
 )
-st.markdown("<br>", unsafe_allow_html=True)
 
-# --- 投球ボタン（中央・「投球」表示）---
+# --- 操作エリア ---
+st.markdown('<div class="section-label">メイン操作</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-action-marker"></div>', unsafe_allow_html=True)
 col_left, col_center, col_right = st.columns([1, 2, 1])
 with col_center:
     if st.button("投球", key="pitch_button", use_container_width=True):
         st.session_state.current_count += 1
         st.rerun()
 
-st.markdown("<br>", unsafe_allow_html=True)
-
 # --- ＋ / −（横並び）---
-col_m, col_gap, col_p = st.columns([1, 1, 1])
+st.markdown('<div class="plus-minus-marker"></div>', unsafe_allow_html=True)
+col_m, col_gap, col_p = st.columns([1, 0.35, 1])
 with col_m:
     if st.button("−", key="btn_minus", use_container_width=True):
         st.session_state.current_count = max(0, st.session_state.current_count - 1)
@@ -96,13 +233,14 @@ with col_p:
         st.session_state.current_count += 1
         st.rerun()
 
-st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
 
-# --- 交代する（secondary-buttons マーカー以降は CSS で通常サイズに）---
+# --- 副操作 ---
+st.markdown('<div class="section-label">投手管理</div>', unsafe_allow_html=True)
 st.markdown('<div class="secondary-buttons"></div>', unsafe_allow_html=True)
 if st.button("交代する", key="change_pitcher", use_container_width=True):
     st.session_state.history.append(
-        {"number": st.session_state.current_pitcher or "—", "count": st.session_state.current_count}
+        {"pitcher": st.session_state.current_pitcher or "—", "count": st.session_state.current_count}
     )
     st.session_state.current_count = 0
     st.rerun()
@@ -114,12 +252,25 @@ if st.button("投球数・履歴をリセット", key="reset_all", use_container
     st.session_state.prev_pitcher_input = None
     st.rerun()
 
-st.markdown("<br>", unsafe_allow_html=True)
-
-# --- 履歴一覧（登板順）---
+# --- 履歴（吹き出し風）---
+st.markdown('<div class="section-label">登板履歴</div>', unsafe_allow_html=True)
+st.markdown('<div class="history-area">', unsafe_allow_html=True)
 if st.session_state.history:
-    st.subheader("登板履歴")
     for i, record in enumerate(st.session_state.history, start=1):
-        num = record["number"]
+        pitcher = record.get("pitcher", record.get("number", "—"))
         c = record["count"]
-        st.caption(f"{i}番手: 背番号 {num} — {c} 球")
+        st.markdown(
+            f"""
+<div class="history-row">
+  <div class="history-bubble">
+    <div class="history-meta">{i}番手</div>
+    <div class="history-main">投手: {pitcher}</div>
+    <div class="history-count">投球数: {c} 球</div>
+  </div>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+else:
+    st.markdown('<div class="empty-history">まだ履歴はありません。</div>', unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
