@@ -26,6 +26,10 @@ if "prev_pitcher_input" not in st.session_state:
 st.markdown(
     """
 <style>
+  section.main > div.block-container {
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.75rem !important;
+  }
   .stApp {
     background: #f5f6f8;
   }
@@ -34,7 +38,7 @@ st.markdown(
     color: #ffffff;
     border-radius: 12px;
     padding: 10px 14px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   .line-header-title {
@@ -91,7 +95,7 @@ st.markdown(
     color: #6b7280;
     font-size: 0.84rem;
     font-weight: 600;
-    margin: 1px 2px 4px;
+    margin: 0 2px 3px;
   }
   .history-area {
     margin-top: 4px;
@@ -219,14 +223,10 @@ st.markdown(
 # --- 操作エリア ---
 st.markdown('<div class="section-label">メイン操作</div>', unsafe_allow_html=True)
 st.markdown('<div class="main-actions-row"></div>', unsafe_allow_html=True)
-col_m, col_center, col_p = st.columns([1, 1.4, 1])
+col_m, col_p = st.columns([1, 1], gap="small")
 with col_m:
     if st.button("−", key="btn_minus", use_container_width=True):
         st.session_state.current_count = max(0, st.session_state.current_count - 1)
-        st.rerun()
-with col_center:
-    if st.button("投球", key="pitch_button", use_container_width=True):
-        st.session_state.current_count += 1
         st.rerun()
 with col_p:
     if st.button("＋", key="btn_plus", use_container_width=True):
