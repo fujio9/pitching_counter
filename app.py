@@ -150,10 +150,11 @@ st.markdown(
     background: #06c755 !important;
     color: #ffffff !important;
     border: none !important;
-    min-height: 72px !important;
+    min-height: 96px !important;
     border-radius: 12px !important;
-    font-size: 2rem !important;
+    font-size: 3.1rem !important;
     font-weight: 900 !important;
+    line-height: 1 !important;
     box-shadow: 0 6px 12px rgba(6, 199, 85, 0.24) !important;
     transition: transform 0.08s ease, box-shadow 0.08s ease !important;
   }
