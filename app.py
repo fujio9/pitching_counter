@@ -145,8 +145,12 @@ st.markdown(
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   }
 
-  /* 主操作ボタン（＋、−） */
-  :has(.main-actions-row) + * div.stButton > button {
+  /*
+   メイン操作（＋/−）
+   - :has+隣接はStreamlit版本でDOMがずれると効かないため、st.columns行（画面上で唯一の HorizontalBlock）を直接指定する
+   */
+  section.main div[data-testid="stHorizontalBlock"] div.stButton > button,
+  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button {
     background: #06c755 !important;
     color: #ffffff !important;
     border: none !important;
@@ -158,7 +162,17 @@ st.markdown(
     box-shadow: 0 6px 12px rgba(6, 199, 85, 0.24) !important;
     transition: transform 0.08s ease, box-shadow 0.08s ease !important;
   }
-  :has(.main-actions-row) + * div.stButton > button:active {
+  /* ラベルが内側要素（p/span/div）になる場合にも文字サイズを反映 */
+  section.main div[data-testid="stHorizontalBlock"] div.stButton > button p,
+  section.main div[data-testid="stHorizontalBlock"] div.stButton > button span,
+  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button p,
+  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button span {
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+  }
+  section.main div[data-testid="stHorizontalBlock"] div.stButton > button:active,
+  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button:active {
     transform: scale(0.97);
     box-shadow: 0 3px 8px rgba(6, 199, 85, 0.2) !important;
   }
