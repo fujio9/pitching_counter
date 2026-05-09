@@ -154,6 +154,16 @@ st.markdown(
     justify-content: center !important;
     align-items: center !important;
   }
+  /* Streamlit内部のflex行（.st-emotion-cache-*）が flex-wrap + start だと改行・左寄せになるため上書き */
+  section.main div[data-testid="stHorizontalBlock"] > div,
+  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] > div {
+    flex-flow: row nowrap !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    -webkit-box-pack: center !important;
+    -webkit-box-align: center !important;
+  }
   section.main div[data-testid="stHorizontalBlock"] div[data-testid="column"],
   section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div[data-testid="column"] {
     display: flex !important;
