@@ -162,14 +162,14 @@ st.markdown(
     box-shadow: 0 6px 12px rgba(6, 199, 85, 0.24) !important;
     transition: transform 0.08s ease, box-shadow 0.08s ease !important;
   }
-  /* ラベルが内側要素（p/span/div）になる場合にも文字サイズを反映 */
-  section.main div[data-testid="stHorizontalBlock"] div.stButton > button p,
-  section.main div[data-testid="stHorizontalBlock"] div.stButton > button span,
-  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button p,
-  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button span {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
+  /* Streamlit が内側に p/div などを挟むとき、明示指定しないと親の font-size が効かない */
+  section.main div[data-testid="stHorizontalBlock"] div.stButton > button *,
+  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button * {
+    font-size: 3.1rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   section.main div[data-testid="stHorizontalBlock"] div.stButton > button:active,
   section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button:active {
