@@ -136,7 +136,7 @@ st.markdown(
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   }
 
-  /* 主操作ボタン（投球、＋、−） */
+  /* 主操作ボタン（＋、−） */
   :has(.main-actions-row) + * div.stButton > button {
     background: #06c755 !important;
     color: #ffffff !important;
@@ -223,14 +223,14 @@ st.markdown(
 # --- 操作エリア ---
 st.markdown('<div class="section-label">メイン操作</div>', unsafe_allow_html=True)
 st.markdown('<div class="main-actions-row"></div>', unsafe_allow_html=True)
-col_m, col_p = st.columns([1, 1], gap="small")
-with col_m:
-    if st.button("−", key="btn_minus", use_container_width=True):
-        st.session_state.current_count = max(0, st.session_state.current_count - 1)
-        st.rerun()
-with col_p:
+col_left, col_right = st.columns([1, 1], gap="small")
+with col_left:
     if st.button("＋", key="btn_plus", use_container_width=True):
         st.session_state.current_count += 1
+        st.rerun()
+with col_right:
+    if st.button("−", key="btn_minus", use_container_width=True):
+        st.session_state.current_count = max(0, st.session_state.current_count - 1)
         st.rerun()
 
 # --- 副操作 ---
@@ -241,6 +241,9 @@ if st.button("交代する", key="change_pitcher", use_container_width=True):
         {"pitcher": st.session_state.current_pitcher or "—", "count": st.session_state.current_count}
     )
     st.session_state.current_count = 0
+    st.session_state.current_pitcher = ""
+    st.session_state.prev_pitcher_input = None
+    st.session_state["pitcher_input"] = ""
     st.rerun()
 
 # --- 投球数・履歴をリセット ---
