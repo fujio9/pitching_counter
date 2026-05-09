@@ -149,13 +149,26 @@ st.markdown(
    メイン操作（＋/−）
    - :has+隣接はStreamlit版本でDOMがずれると効かないため、st.columns行（画面上で唯一の HorizontalBlock）を直接指定する
    */
+  section.main div[data-testid="stHorizontalBlock"] div[data-testid="column"],
+  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div[data-testid="column"] {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
   section.main div[data-testid="stHorizontalBlock"] div.stButton > button,
   section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div.stButton > button {
     background: #06c755 !important;
     color: #ffffff !important;
     border: none !important;
+    box-sizing: border-box !important;
+    width: 96px !important;
+    height: 96px !important;
+    min-width: 96px !important;
+    max-width: 96px !important;
     min-height: 96px !important;
-    border-radius: 12px !important;
+    max-height: 96px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
     font-size: 3.1rem !important;
     font-weight: 900 !important;
     line-height: 1 !important;
