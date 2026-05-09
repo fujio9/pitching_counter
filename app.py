@@ -3,6 +3,8 @@
 Python + Streamlit / スマホ向け片手操作
 """
 
+import html
+
 import streamlit as st
 
 # --- Page config ---
@@ -109,17 +111,24 @@ st.markdown(
   .history-area {
     margin-top: 4px;
   }
-  .history-row {
+  .history-wrap {
     display: flex;
+    flex-flow: row wrap;
+    gap: 0.55rem 0.65rem;
+    align-items: stretch;
     justify-content: flex-start;
-    margin: 8px 0;
+    width: 100%;
+    box-sizing: border-box;
   }
   .history-bubble {
     background: #ffffff;
     border-radius: 14px;
     padding: 10px 12px;
     box-shadow: 0 4px 14px rgba(17, 24, 39, 0.08);
-    max-width: 92%;
+    flex: 1 1 11rem;
+    max-width: 100%;
+    min-width: 8.75rem;
+    box-sizing: border-box;
   }
   .history-meta {
     font-size: 0.78rem;
@@ -322,25 +331,27 @@ if st.button("投球数・履歴をリセット", key="reset_all", use_container
     st.session_state.prev_pitcher_input = None
     st.rerun()
 
-# --- 履歴（吹き出し風）---
+# --- 履歴（横並び・折り返し） ---
 st.markdown('<div class="section-label">登板履歴</div>', unsafe_allow_html=True)
-st.markdown('<div class="history-area">', unsafe_allow_html=True)
 if st.session_state.history:
+    parts = ['<div class="history-area"><div class="history-wrap">']
     for i, record in enumerate(st.session_state.history, start=1):
-        pitcher = record.get("pitcher", record.get("number", "—"))
+        pitcher_raw = record.get("pitcher", record.get("number", "—"))
+        pitcher_esc = html.escape(str(pitcher_raw))
         c = record["count"]
-        st.markdown(
+        parts.append(
             f"""
-<div class="history-row">
-  <div class="history-bubble">
-    <div class="history-meta">{i}番手</div>
-    <div class="history-main">投手: {pitcher}</div>
-    <div class="history-count">投球数: {c} 球</div>
-  </div>
+<div class="history-bubble">
+  <div class="history-meta">{i}番手</div>
+  <div class="history-main">投手: {pitcher_esc}</div>
+  <div class="history-count">投球数: {c} 球</div>
 </div>
-""",
-            unsafe_allow_html=True,
+"""
         )
+    parts.append("</div></div>")
+    st.markdown("".join(parts), unsafe_allow_html=True)
 else:
-    st.markdown('<div class="empty-history">まだ履歴はありません。</div>', unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown(
+        '<div class="history-area"><div class="empty-history">まだ履歴はありません。</div></div>',
+        unsafe_allow_html=True,
+    )
