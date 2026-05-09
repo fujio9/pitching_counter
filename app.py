@@ -149,6 +149,11 @@ st.markdown(
    メイン操作（＋/−）
    - :has+隣接はStreamlit版本でDOMがずれると効かないため、st.columns行（画面上で唯一の HorizontalBlock）を直接指定する
    */
+  section.main div[data-testid="stHorizontalBlock"],
+  section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] {
+    justify-content: center !important;
+    align-items: center !important;
+  }
   section.main div[data-testid="stHorizontalBlock"] div[data-testid="column"],
   section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div[data-testid="column"] {
     display: flex !important;
@@ -261,7 +266,9 @@ st.markdown(
 # --- 操作エリア ---
 st.markdown('<div class="section-label">メイン操作</div>', unsafe_allow_html=True)
 st.markdown('<div class="main-actions-row"></div>', unsafe_allow_html=True)
-col_left, col_right = st.columns([1, 1], gap="small")
+sp_l, col_left, col_right, sp_r = st.columns([2, 1, 1, 2], gap="small")
+with sp_l:
+    st.empty()
 with col_left:
     if st.button("＋", key="btn_plus", use_container_width=True):
         st.session_state.current_count += 1
@@ -270,6 +277,8 @@ with col_right:
     if st.button("−", key="btn_minus", use_container_width=True):
         st.session_state.current_count = max(0, st.session_state.current_count - 1)
         st.rerun()
+with sp_r:
+    st.empty()
 
 # --- 副操作 ---
 st.markdown('<div class="section-label">投手管理</div>', unsafe_allow_html=True)
