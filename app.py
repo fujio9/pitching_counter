@@ -21,14 +21,15 @@ if "history" not in st.session_state:
     st.session_state.history = []
 if "prev_pitcher_input" not in st.session_state:
     st.session_state.prev_pitcher_input = None
+if "pitcher_input_version" not in st.session_state:
+    st.session_state.pitcher_input_version = 0
 
-# --- 交代直後: ウィジェット key は text_input より前に削除（Streamlit の制約回避）---
+# --- 交代直後: 動的 key で text_input を作り直し、入力欄を確実に空にする ---
 if st.session_state.get("_clear_pitcher_after_change"):
     st.session_state._clear_pitcher_after_change = False
     st.session_state.current_pitcher = ""
     st.session_state.prev_pitcher_input = None
-    if "pitcher_input" in st.session_state:
-        del st.session_state["pitcher_input"]
+    st.session_state.pitcher_input_version += 1
 
 # --- カスタム CSS（LINEライト風）---
 st.markdown(
@@ -194,10 +195,11 @@ st.markdown(
 )
 
 # --- 投手入力（背番号・名前・任意テキスト） ---
+_pitcher_widget_key = f"pitcher_input_v{st.session_state.pitcher_input_version}"
 st.session_state.current_pitcher = st.text_input(
     "現在の投手（背番号・名前・任意テキスト）",
     value=st.session_state.current_pitcher,
-    key="pitcher_input",
+    key=_pitcher_widget_key,
     placeholder="例: 18 / 佐藤 / 先発A",
 ).strip()
 
