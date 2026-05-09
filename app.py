@@ -147,22 +147,40 @@ st.markdown(
 
   /*
    メイン操作（＋/−）
-   - :has+隣接はStreamlit版本でDOMがずれると効かないため、st.columns行（画面上で唯一の HorizontalBlock）を直接指定する
+   - 親幅いっぱいのflexだと内部の emotion 行だけ左詰めに見えるため、ブロック全体を fit-content + margin:auto で画面中央へ
+   - 横一行にこだわらず、狭い画面では wrap でも中央寄せを維持する
    */
   section.main div[data-testid="stHorizontalBlock"],
   section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] {
-    justify-content: center !important;
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
   }
-  /* Streamlit内部のflex行（.st-emotion-cache-*）が flex-wrap + start だと改行・左寄せになるため上書き */
   section.main div[data-testid="stHorizontalBlock"] > div,
   section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] > div {
-    flex-flow: row nowrap !important;
-    flex-wrap: nowrap !important;
+    flex-flow: row wrap !important;
+    flex-wrap: wrap !important;
     justify-content: center !important;
     align-items: center !important;
+    align-content: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
     -webkit-box-pack: center !important;
     -webkit-box-align: center !important;
+    gap: 0.75rem !important;
+  }
+  /* 親がflexのときでも行ブロックごと画面中央になるよう、HorizontalBlock の直親を中央寄せ */
+  section.main div:has(> div[data-testid="stHorizontalBlock"]),
+  section[data-testid="stMain"] div:has(> div[data-testid="stHorizontalBlock"]) {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   section.main div[data-testid="stHorizontalBlock"] div[data-testid="column"],
   section[data-testid="stMain"] div[data-testid="stHorizontalBlock"] div[data-testid="column"] {
@@ -276,9 +294,7 @@ st.markdown(
 # --- 操作エリア ---
 st.markdown('<div class="section-label">メイン操作</div>', unsafe_allow_html=True)
 st.markdown('<div class="main-actions-row"></div>', unsafe_allow_html=True)
-sp_l, col_left, col_right, sp_r = st.columns([2, 1, 1, 2], gap="small")
-with sp_l:
-    st.empty()
+col_left, col_right = st.columns(2, gap="small")
 with col_left:
     if st.button("＋", key="btn_plus", use_container_width=True):
         st.session_state.current_count += 1
@@ -287,8 +303,6 @@ with col_right:
     if st.button("−", key="btn_minus", use_container_width=True):
         st.session_state.current_count = max(0, st.session_state.current_count - 1)
         st.rerun()
-with sp_r:
-    st.empty()
 
 # --- 副操作 ---
 st.markdown('<div class="section-label">投手管理</div>', unsafe_allow_html=True)
