@@ -22,6 +22,14 @@ if "history" not in st.session_state:
 if "prev_pitcher_input" not in st.session_state:
     st.session_state.prev_pitcher_input = None
 
+# --- 交代直後: ウィジェット key は text_input より前に削除（Streamlit の制約回避）---
+if st.session_state.get("_clear_pitcher_after_change"):
+    st.session_state._clear_pitcher_after_change = False
+    st.session_state.current_pitcher = ""
+    st.session_state.prev_pitcher_input = None
+    if "pitcher_input" in st.session_state:
+        del st.session_state["pitcher_input"]
+
 # --- カスタム CSS（LINEライト風）---
 st.markdown(
     """
@@ -241,9 +249,7 @@ if st.button("交代する", key="change_pitcher", use_container_width=True):
         {"pitcher": st.session_state.current_pitcher or "—", "count": st.session_state.current_count}
     )
     st.session_state.current_count = 0
-    st.session_state.current_pitcher = ""
-    st.session_state.prev_pitcher_input = None
-    st.session_state["pitcher_input"] = ""
+    st.session_state._clear_pitcher_after_change = True
     st.rerun()
 
 # --- 投球数・履歴をリセット ---
